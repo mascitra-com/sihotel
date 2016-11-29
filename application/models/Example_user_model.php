@@ -26,13 +26,13 @@ class Example_user_model extends MY_Model
 
         // you can disable the use of timestamps. This way, MY_Model won't try to set a created_at and updated_at value on create methods.
         // Also, if you pass it an array as calue, it tells MY_Model, that the first element is a created_at field type, the second element is a updated_at field type (and the third element is a deleted_at field type if $this->soft_deletes is set to TRUE)
-        $this->timestamps = TRUE
+        $this->timestamps = TRUE;
 
         // you can enable (TRUE) or disable (FALSE) the "soft delete" on records. Default is FALSE, which means that when you delete a row, that one is gone forever
-            $this->soft_deletes = FALSE
+            $this->soft_deletes = FALSE;
 
         // you can set how the model returns you the result: as 'array' or as 'object'. the default value is 'object'
-        $this->return_as = 'object' | 'array'
+        $this->return_as = 'object' | 'array';
 
         // you can set relationships between tables
 
@@ -55,41 +55,4 @@ class Example_user_model extends MY_Model
         // For example: considering that a post can have multiple authors, a pivot table that connects two tables (users and posts) must be named posts_users and must have post_id and user_id as identifying columns for the posts.id and users.id tables.
         parent::__construct();
     }
-
-    public $rules = array(
-        'insert' => array(
-
-            'username' => array(
-                'field'=>'username',
-                'label'=>'Username',
-                'rules'=>'trim|required'),
-
-            'email' => array(
-                    'field'=>'email',
-                    'label'=>'Email',
-                    'rules'=>'trim|valid_email|required',
-                    'errors' => array ('required' => 'Error Message rule "required" for field email',
-                                       'trim' = > 'Error message for rule "trim" for field email',
-                    'valid_email' = > 'Error message for rule "valid_email" for field email')
-    ),
-            'update' => array(
-                    'username' => array(
-                            'field'=>'username',
-                            'label'=>'Username',
-                            'rules'=>'trim|required'),
-
-                    'email' => array(
-                            'field'=>'email',
-                            'label'=>'Email',
-                            'rules'=>'trim|valid_email|required',
-                            'errors' => array ('required' => 'Error Message rule "required" for field email',
-                                    'trim' = > 'Error message for rule "trim" for field email',
-                                    'valid_email' = > 'Error message for rule "valid_email" for field email')
-                    ),
-                    'id' => array(
-                            'field'=>'id',
-                            'label'=>'ID',
-                            'rules'=>'trim|is_natural_no_zero|required'),
-            )
-    );
 }

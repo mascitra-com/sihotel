@@ -16,7 +16,7 @@ class MY_Controller extends CI_Controller
 
 	/**
 	 * init()
-	 * 
+	 *
 	 * Berfungsi untuk mengeksekusi view
 	 */
 	protected function init()
@@ -27,7 +27,7 @@ class MY_Controller extends CI_Controller
 
 	/**
 	 * message()
-	 * 
+	 *
 	 * Berfungsi untuk menampilkan pesan
 	 * @ $msg = isi pesan
 	 * @ $typ = tipe pesan (default, primary, success, warning, danger)
@@ -39,7 +39,7 @@ class MY_Controller extends CI_Controller
 
 	/**
 	 * go()
-	 * 
+	 *
 	 * Berfungsi untuk melakukan redirect
 	 * @ $link = alamat tujuan
 	 */

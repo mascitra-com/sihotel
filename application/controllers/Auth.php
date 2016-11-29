@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Auth extends CI_Controller {
+class Auth extends MY_Controller {
 
 	public function __construct()
 	{
@@ -10,7 +10,8 @@ class Auth extends CI_Controller {
 		$this->load->helper(array('url','language'));
 
 		$this->form_validation->set_error_delimiters($this->config->item('error_start_delimiter', 'ion_auth'), $this->config->item('error_end_delimiter', 'ion_auth'));
-
+        $this->_view['template'] = 'template/auth/index'; # Set template location
+        $this->_view['css'] 	 = 'auth'; 				  # Set CSS
 		$this->lang->load('auth');
 	}
 
@@ -47,6 +48,9 @@ class Auth extends CI_Controller {
 	// log the user in
 	public function login()
 	{
+        # set configuration for view
+        $this->_view['page']  = 'auth/login';
+        $this->_view['title'] = 'Login HOTELS';
 		$this->data['title'] = $this->lang->line('login_heading');
 
 		//validate form input
@@ -89,8 +93,7 @@ class Auth extends CI_Controller {
 				'id'   => 'password',
 				'type' => 'password',
 			);
-
-			$this->_render_page('auth/login', $this->data);
+            $this->init();
 		}
 	}
 
