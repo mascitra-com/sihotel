@@ -171,27 +171,27 @@ class Ion_auth_model extends CI_Model
 		$this->lang->load('ion_auth');
 
 		// initialize db tables data
-		$this->tables  = $this->config->item('tables');
+		$this->tables  = $this->config->item('tables', 'ion_auth');
 
 		//initialize data
-		$this->identity_column = $this->config->item('identity');
-		$this->store_salt      = $this->config->item('store_salt');
-		$this->salt_length     = $this->config->item('salt_length');
-		$this->join			   = $this->config->item('join');
+		$this->identity_column = $this->config->item('identity', 'ion_auth');
+		$this->store_salt      = $this->config->item('store_salt', 'ion_auth');
+		$this->salt_length     = $this->config->item('salt_length', 'ion_auth');
+		$this->join			   = $this->config->item('join', 'ion_auth');
 
 
 		// initialize hash method options (Bcrypt)
-		$this->hash_method = $this->config->item('hash_method');
-		$this->default_rounds = $this->config->item('default_rounds');
-		$this->random_rounds = $this->config->item('random_rounds');
-		$this->min_rounds = $this->config->item('min_rounds');
-		$this->max_rounds = $this->config->item('max_rounds');
+		$this->hash_method = $this->config->item('hash_method', 'ion_auth');
+		$this->default_rounds = $this->config->item('default_rounds', 'ion_auth');
+		$this->random_rounds = $this->config->item('random_rounds', 'ion_auth');
+		$this->min_rounds = $this->config->item('min_rounds', 'ion_auth');
+		$this->max_rounds = $this->config->item('max_rounds', 'ion_auth');
 
 
 		// initialize messages and error
 		$this->messages    = array();
 		$this->errors      = array();
-		$delimiters_source = $this->config->item('delimiters_source');
+		$delimiters_source = $this->config->item('delimiters_source', 'ion_auth');
 
 		// load the error delimeters either from the config file or use what's been supplied to form validation
 		if ($delimiters_source === 'form_validation')
@@ -214,10 +214,10 @@ class Ion_auth_model extends CI_Model
 		else
 		{
 			// use delimiters from config
-			$this->message_start_delimiter = $this->config->item('message_start_delimiter');
-			$this->message_end_delimiter   = $this->config->item('message_end_delimiter');
-			$this->error_start_delimiter   = $this->config->item('error_start_delimiter');
-			$this->error_end_delimiter     = $this->config->item('error_end_delimiter');
+			$this->message_start_delimiter = $this->config->item('message_start_delimiter', 'ion_auth');
+			$this->message_end_delimiter   = $this->config->item('message_end_delimiter', 'ion_auth');
+			$this->error_start_delimiter   = $this->config->item('error_start_delimiter', 'ion_auth');
+			$this->error_end_delimiter     = $this->config->item('error_end_delimiter', 'ion_auth');
 		}
 
 
@@ -236,7 +236,7 @@ class Ion_auth_model extends CI_Model
 				$params = array('rounds' => $this->default_rounds);
 			}
 
-			$params['salt_prefix'] = $this->config->item('salt_prefix');
+			$params['salt_prefix'] = $this->config->item('salt_prefix', 'ion_auth');
 			$this->load->library('bcrypt',$params);
 		}
 
@@ -828,9 +828,9 @@ class Ion_auth_model extends CI_Model
 
 		if ($profile) {
 
-			if ($this->config->item('forgot_password_expiration') > 0) {
+			if ($this->config->item('forgot_password_expiration', 'ion_auth') > 0) {
 				//Make sure it isn't expired
-				$expiration = $this->config->item('forgot_password_expiration');
+				$expiration = $this->config->item('forgot_password_expiration', 'ion_auth');
 				if (time() - $profile->forgotten_password_time > $expiration) {
 					//it has expired
 					$this->set_error('forgot_password_expired');
@@ -867,21 +867,21 @@ class Ion_auth_model extends CI_Model
 	{
 		$this->trigger_events('pre_register');
 
-		$manual_activation = $this->config->item('manual_activation');
+		$manual_activation = $this->config->item('manual_activation', 'ion_auth');
 
 		if ($this->identity_check($identity))
 		{
 			$this->set_error('account_creation_duplicate_identity');
 			return FALSE;
 		}
-		elseif ( !$this->config->item('default_group') && empty($groups) )
+		elseif ( !$this->config->item('default_group', 'ion_auth') && empty($groups) )
 		{
 			$this->set_error('account_creation_missing_default_group');
 			return FALSE;
 		}
 
 		// check if the default set in config exists in database
-		$query = $this->db->get_where($this->tables['groups'],array('name' => $this->config->item('default_group')),1)->row();
+		$query = $this->db->get_where($this->tables['groups'],array('name' => $this->config->item('default_group', 'ion_auth')),1)->row();
 		if( !isset($query->id) && empty($groups) )
 		{
 			$this->set_error('account_creation_invalid_default_group');
@@ -999,7 +999,7 @@ class Ion_auth_model extends CI_Model
 
 				$this->clear_login_attempts($identity);
 
-				if ($remember && $this->config->item('remember_users'))
+				if ($remember && $this->config->item('remember_users', 'ion_auth'))
 				{
 					$this->remember_user($user->id);
 				}
@@ -1030,8 +1030,8 @@ class Ion_auth_model extends CI_Model
 	 * @return boolean
 	 **/
 	public function is_max_login_attempts_exceeded($identity) {
-		if ($this->config->item('track_login_attempts')) {
-			$max_attempts = $this->config->item('maximum_login_attempts');
+		if ($this->config->item('track_login_attempts', 'ion_auth')) {
+			$max_attempts = $this->config->item('maximum_login_attempts', 'ion_auth');
 			if ($max_attempts > 0) {
 				$attempts = $this->get_attempts_num($identity);
 				return $attempts >= $max_attempts;
@@ -1049,10 +1049,10 @@ class Ion_auth_model extends CI_Model
 	 */
 	public function get_attempts_num($identity)
 	{
-        if ($this->config->item('track_login_attempts')) {
+        if ($this->config->item('track_login_attempts', 'ion_auth')) {
             $ip_address = $this->_prepare_ip($this->input->ip_address());
             $this->db->select('1', FALSE);
-            if ($this->config->item('track_login_ip_address')) {
+            if ($this->config->item('track_login_ip_address', 'ion_auth')) {
             	$this->db->where('ip_address', $ip_address);
             	$this->db->where('login', $identity);
             } else if (strlen($identity) > 0) $this->db->or_where('login', $identity);
@@ -1070,7 +1070,7 @@ class Ion_auth_model extends CI_Model
 	 */
 	public function is_time_locked_out($identity) {
 
-		return $this->is_max_login_attempts_exceeded($identity) && $this->get_last_attempt_time($identity) > time() - $this->config->item('lockout_time');
+		return $this->is_max_login_attempts_exceeded($identity) && $this->get_last_attempt_time($identity) > time() - $this->config->item('lockout_time', 'ion_auth');
 	}
 
 	/**
@@ -1080,11 +1080,11 @@ class Ion_auth_model extends CI_Model
 	 * @return	int
 	 */
 	public function get_last_attempt_time($identity) {
-		if ($this->config->item('track_login_attempts')) {
+		if ($this->config->item('track_login_attempts', 'ion_auth')) {
 			$ip_address = $this->_prepare_ip($this->input->ip_address());
 
 			$this->db->select('time');
-            if ($this->config->item('track_login_ip_address')) $this->db->where('ip_address', $ip_address);
+            if ($this->config->item('track_login_ip_address', 'ion_auth')) $this->db->where('ip_address', $ip_address);
 			else if (strlen($identity) > 0) $this->db->or_where('login', $identity);
 			$this->db->order_by('id', 'desc');
 			$qres = $this->db->get($this->tables['login_attempts'], 1);
@@ -1104,7 +1104,7 @@ class Ion_auth_model extends CI_Model
 	 * @param string $identity
 	 **/
 	public function increase_login_attempts($identity) {
-		if ($this->config->item('track_login_attempts')) {
+		if ($this->config->item('track_login_attempts', 'ion_auth')) {
 			$ip_address = $this->_prepare_ip($this->input->ip_address());
 			return $this->db->insert($this->tables['login_attempts'], array('ip_address' => $ip_address, 'login' => $identity, 'time' => time()));
 		}
@@ -1118,7 +1118,7 @@ class Ion_auth_model extends CI_Model
 	 * @param string $identity
 	 **/
 	public function clear_login_attempts($identity, $expire_period = 86400) {
-		if ($this->config->item('track_login_attempts')) {
+		if ($this->config->item('track_login_attempts', 'ion_auth')) {
 			$ip_address = $this->_prepare_ip($this->input->ip_address());
 
 			$this->db->where(array('ip_address' => $ip_address, 'login' => $identity));
@@ -1689,14 +1689,14 @@ class Ion_auth_model extends CI_Model
 		$this->trigger_events('set_lang');
 
 		// if the user_expire is set to zero we'll set the expiration two years from now.
-		if($this->config->item('user_expire') === 0)
+		if($this->config->item('user_expire', 'ion_auth') === 0)
 		{
 			$expire = (60*60*24*365*2);
 		}
 		// otherwise use what is set
 		else
 		{
-			$expire = $this->config->item('user_expire');
+			$expire = $this->config->item('user_expire', 'ion_auth');
 		}
 
 		set_cookie(array(
@@ -1758,24 +1758,24 @@ class Ion_auth_model extends CI_Model
 		if ($this->db->affected_rows() > -1)
 		{
 			// if the user_expire is set to zero we'll set the expiration two years from now.
-			if($this->config->item('user_expire') === 0)
+			if($this->config->item('user_expire', 'ion_auth') === 0)
 			{
 				$expire = (60*60*24*365*2);
 			}
 			// otherwise use what is set
 			else
 			{
-				$expire = $this->config->item('user_expire');
+				$expire = $this->config->item('user_expire', 'ion_auth');
 			}
 
 			set_cookie(array(
-			    'name'   => $this->config->item('identity_cookie_name'),
+			    'name'   => $this->config->item('identity_cookie_name', 'ion_auth'),
 			    'value'  => $user->{$this->identity_column},
 			    'expire' => $expire
 			));
 
 			set_cookie(array(
-			    'name'   => $this->config->item('remember_cookie_name'),
+			    'name'   => $this->config->item('remember_cookie_name', 'ion_auth'),
 			    'value'  => $salt,
 			    'expire' => $expire
 			));
@@ -1799,9 +1799,9 @@ class Ion_auth_model extends CI_Model
 		$this->trigger_events('pre_login_remembered_user');
 
 		// check for valid data
-		if (!get_cookie($this->config->item('identity_cookie_name'))
-			|| !get_cookie($this->config->item('remember_cookie_name'))
-			|| !$this->identity_check(get_cookie($this->config->item('identity_cookie_name'))))
+		if (!get_cookie($this->config->item('identity_cookie_name', 'ion_auth'))
+			|| !get_cookie($this->config->item('remember_cookie_name', 'ion_auth'))
+			|| !$this->identity_check(get_cookie($this->config->item('identity_cookie_name', 'ion_auth'))))
 		{
 			$this->trigger_events(array('post_login_remembered_user', 'post_login_remembered_user_unsuccessful'));
 			return FALSE;
@@ -1810,8 +1810,8 @@ class Ion_auth_model extends CI_Model
 		// get the user
 		$this->trigger_events('extra_where');
 		$query = $this->db->select($this->identity_column.', id, email, last_login')
-		                  ->where($this->identity_column, get_cookie($this->config->item('identity_cookie_name')))
-		                  ->where('remember_code', get_cookie($this->config->item('remember_cookie_name')))
+		                  ->where($this->identity_column, get_cookie($this->config->item('identity_cookie_name', 'ion_auth')))
+		                  ->where('remember_code', get_cookie($this->config->item('remember_cookie_name', 'ion_auth')))
 		                  ->limit(1)
 		    			  ->order_by('id', 'desc')
 		                  ->get($this->tables['users']);
@@ -1826,7 +1826,7 @@ class Ion_auth_model extends CI_Model
 			$this->set_session($user);
 
 			// extend the users cookies if the option is enabled
-			if ($this->config->item('user_extend_on_login'))
+			if ($this->config->item('user_extend_on_login', 'ion_auth'))
 			{
 				$this->remember_user($user->id);
 			}
@@ -1909,7 +1909,7 @@ class Ion_auth_model extends CI_Model
 
 		// restrict change of name of the admin group
         $group = $this->db->get_where($this->tables['groups'], array('id' => $group_id))->row();
-        if($this->config->item('admin_group') === $group->name && $group_name !== $group->name)
+        if($this->config->item('admin_group', 'ion_auth') === $group->name && $group_name !== $group->name)
         {
             $this->set_error('group_name_admin_not_alter');
             return FALSE;
@@ -1947,7 +1947,7 @@ class Ion_auth_model extends CI_Model
 			return FALSE;
 		}
 		$group = $this->group($group_id)->row();
-		if($group->name == $this->config->item('admin_group'))
+		if($group->name == $this->config->item('admin_group', 'ion_auth'))
 		{
 			$this->trigger_events(array('post_delete_group', 'post_delete_group_notallowed'));
 			$this->set_error('group_delete_notallowed');

@@ -68,14 +68,14 @@ class Ion_auth
 		$this->_cache_user_in_group =& $this->ion_auth_model->_cache_user_in_group;
 
 		//auto-login the user if they are remembered
-		if (!$this->logged_in() && get_cookie($this->config->item('identity_cookie_name')) && get_cookie($this->config->item('remember_cookie_name')))
+		if (!$this->logged_in() && get_cookie($this->config->item('identity_cookie_name', 'ion_auth')) && get_cookie($this->config->item('remember_cookie_name', 'ion_auth')))
 		{
 			$this->ion_auth_model->login_remembered_user();
 		}
 
-		$email_config = $this->config->item('email_config');
+		$email_config = $this->config->item('email_config', 'ion_auth');
 
-		if ($this->config->item('use_ci_email') && isset($email_config) && is_array($email_config))
+		if ($this->config->item('use_ci_email', 'ion_auth') && isset($email_config) && is_array($email_config))
 		{
 			$this->email->initialize($email_config);
 		}
@@ -145,22 +145,22 @@ class Ion_auth
 			if ($user)
 			{
 				$data = array(
-					'identity'		=> $user->{$this->config->item('identity')},
+					'identity'		=> $user->{$this->config->item('identity', 'ion_auth')},
 					'forgotten_password_code' => $user->forgotten_password_code
 				);
 
-				if(!$this->config->item('use_ci_email'))
+				if(!$this->config->item('use_ci_email', 'ion_auth'))
 				{
 					$this->set_message('forgot_password_successful');
 					return $data;
 				}
 				else
 				{
-					$message = $this->load->view($this->config->item('email_templates').$this->config->item('email_forgot_password'), $data, true);
+					$message = $this->load->view($this->config->item('email_templates', 'ion_auth').$this->config->item('email_forgot_password', 'ion_auth'), $data, true);
 					$this->email->clear();
-					$this->email->from($this->config->item('admin_email'), $this->config->item('site_title'));
+					$this->email->from($this->config->item('admin_email', 'ion_auth'), $this->config->item('site_title', 'ion_auth'));
 					$this->email->to($user->email);
-					$this->email->subject($this->config->item('site_title') . ' - ' . $this->lang->line('email_forgotten_password_subject'));
+					$this->email->subject($this->config->item('site_title', 'ion_auth') . ' - ' . $this->lang->line('email_forgotten_password_subject'));
 					$this->email->message($message);
 
 					if ($this->email->send())
@@ -199,7 +199,7 @@ class Ion_auth
 	{
 		$this->ion_auth_model->trigger_events('pre_password_change');
 
-		$identity = $this->config->item('identity');
+		$identity = $this->config->item('identity', 'ion_auth');
 		$profile  = $this->where('forgotten_password_code', $code)->users()->row(); //pass the code to profile
 
 		if (!$profile)
@@ -217,7 +217,7 @@ class Ion_auth
 				'identity'     => $profile->{$identity},
 				'new_password' => $new_password
 			);
-			if(!$this->config->item('use_ci_email'))
+			if(!$this->config->item('use_ci_email', 'ion_auth'))
 			{
 				$this->set_message('password_change_successful');
 				$this->ion_auth_model->trigger_events(array('post_password_change', 'password_change_successful'));
@@ -225,12 +225,12 @@ class Ion_auth
 			}
 			else
 			{
-				$message = $this->load->view($this->config->item('email_templates').$this->config->item('email_forgot_password_complete'), $data, true);
+				$message = $this->load->view($this->config->item('email_templates', 'ion_auth').$this->config->item('email_forgot_password_complete', 'ion_auth'), $data, true);
 
 				$this->email->clear();
-				$this->email->from($this->config->item('admin_email'), $this->config->item('site_title'));
+				$this->email->from($this->config->item('admin_email', 'ion_auth'), $this->config->item('site_title', 'ion_auth'));
 				$this->email->to($profile->email);
-				$this->email->subject($this->config->item('site_title') . ' - ' . $this->lang->line('email_new_password_subject'));
+				$this->email->subject($this->config->item('site_title', 'ion_auth') . ' - ' . $this->lang->line('email_new_password_subject'));
 				$this->email->message($message);
 
 				if ($this->email->send())
@@ -271,9 +271,9 @@ class Ion_auth
 		}
 		else
 		{
-			if ($this->config->item('forgot_password_expiration') > 0) {
+			if ($this->config->item('forgot_password_expiration', 'ion_auth') > 0) {
 				//Make sure it isn't expired
-				$expiration = $this->config->item('forgot_password_expiration');
+				$expiration = $this->config->item('forgot_password_expiration', 'ion_auth');
 				if (time() - $profile->forgotten_password_time > $expiration) {
 					//it has expired
 					$this->clear_forgotten_password_code($code);
@@ -300,7 +300,7 @@ class Ion_auth
 	{
 		$this->ion_auth_model->trigger_events('pre_account_creation');
 
-		$email_activation = $this->config->item('email_activation');
+		$email_activation = $this->config->item('email_activation', 'ion_auth');
 
 		$id = $this->ion_auth_model->register($identity, $password, $email, $additional_data, $group_ids);
 
@@ -342,7 +342,7 @@ class Ion_auth
 			}
 
 			$activation_code = $this->ion_auth_model->activation_code;
-			$identity        = $this->config->item('identity');
+			$identity        = $this->config->item('identity', 'ion_auth');
 			$user            = $this->ion_auth_model->user($id)->row();
 
 			$data = array(
@@ -351,7 +351,7 @@ class Ion_auth
 				'email'      => $email,
 				'activation' => $activation_code,
 			);
-			if(!$this->config->item('use_ci_email'))
+			if(!$this->config->item('use_ci_email', 'ion_auth'))
 			{
 				$this->ion_auth_model->trigger_events(array('post_account_creation', 'post_account_creation_successful', 'activation_email_successful'));
 				$this->set_message('activation_email_successful');
@@ -359,12 +359,12 @@ class Ion_auth
 			}
 			else
 			{
-				$message = $this->load->view($this->config->item('email_templates').$this->config->item('email_activate'), $data, true);
+				$message = $this->load->view($this->config->item('email_templates', 'ion_auth').$this->config->item('email_activate', 'ion_auth'), $data, true);
 
 				$this->email->clear();
-				$this->email->from($this->config->item('admin_email'), $this->config->item('site_title'));
+				$this->email->from($this->config->item('admin_email', 'ion_auth'), $this->config->item('site_title', 'ion_auth'));
 				$this->email->to($email);
-				$this->email->subject($this->config->item('site_title') . ' - ' . $this->lang->line('email_activation_subject'));
+				$this->email->subject($this->config->item('site_title', 'ion_auth') . ' - ' . $this->lang->line('email_activation_subject'));
 				$this->email->message($message);
 
 				if ($this->email->send() == TRUE)
@@ -392,7 +392,7 @@ class Ion_auth
 	{
 		$this->ion_auth_model->trigger_events('logout');
 
-		$identity = $this->config->item('identity');
+		$identity = $this->config->item('identity', 'ion_auth');
 
                 if (substr(CI_VERSION, 0, 1) == '2')
 		{
@@ -404,13 +404,13 @@ class Ion_auth
                 }
 
 		// delete the remember me cookies if they exist
-		if (get_cookie($this->config->item('identity_cookie_name')))
+		if (get_cookie($this->config->item('identity_cookie_name', 'ion_auth')))
 		{
-			delete_cookie($this->config->item('identity_cookie_name'));
+			delete_cookie($this->config->item('identity_cookie_name', 'ion_auth'));
 		}
-		if (get_cookie($this->config->item('remember_cookie_name')))
+		if (get_cookie($this->config->item('remember_cookie_name', 'ion_auth')))
 		{
-			delete_cookie($this->config->item('remember_cookie_name'));
+			delete_cookie($this->config->item('remember_cookie_name', 'ion_auth'));
 		}
 
 		// Destroy the session
@@ -473,7 +473,7 @@ class Ion_auth
 	{
 		$this->ion_auth_model->trigger_events('is_admin');
 
-		$admin_group = $this->config->item('admin_group');
+		$admin_group = $this->config->item('admin_group', 'ion_auth');
 
 		return $this->in_group($admin_group, $id);
 	}

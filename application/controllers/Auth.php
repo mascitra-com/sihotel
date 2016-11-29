@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Auth extends MY_Controller {
+class Auth extends CI_Controller {
 
 	public function __construct()
 	{
@@ -9,7 +9,7 @@ class Auth extends MY_Controller {
 		$this->load->library(array('ion_auth','form_validation'));
 		$this->load->helper(array('url','language'));
 
-		$this->form_validation->set_error_delimiters($this->config->item('error_start_delimiter'), $this->config->item('error_end_delimiter'));
+		$this->form_validation->set_error_delimiters($this->config->item('error_start_delimiter', 'ion_auth'), $this->config->item('error_end_delimiter', 'ion_auth'));
 
 		$this->lang->load('auth');
 	}
@@ -111,7 +111,7 @@ class Auth extends MY_Controller {
 	public function change_password()
 	{
 		$this->form_validation->set_rules('old', $this->lang->line('change_password_validation_old_password_label'), 'required');
-		$this->form_validation->set_rules('new', $this->lang->line('change_password_validation_new_password_label'), 'required|min_length[' . $this->config->item('min_password_length') . ']|max_length[' . $this->config->item('max_password_length') . ']|matches[new_confirm]');
+		$this->form_validation->set_rules('new', $this->lang->line('change_password_validation_new_password_label'), 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[new_confirm]');
 		$this->form_validation->set_rules('new_confirm', $this->lang->line('change_password_validation_new_password_confirm_label'), 'required');
 
 		if (!$this->ion_auth->logged_in())
@@ -127,7 +127,7 @@ class Auth extends MY_Controller {
 			// set the flash data error message if there is one
 			$this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
 
-			$this->data['min_password_length'] = $this->config->item('min_password_length');
+			$this->data['min_password_length'] = $this->config->item('min_password_length', 'ion_auth');
 			$this->data['old_password'] = array(
 				'name' => 'old',
 				'id'   => 'old',
@@ -179,7 +179,7 @@ class Auth extends MY_Controller {
 	public function forgot_password()
 	{
 		// setting validation rules by checking whether identity is username or email
-		if($this->config->item('identity') != 'email' )
+		if($this->config->item('identity', 'ion_auth') != 'email' )
 		{
 		   $this->form_validation->set_rules('identity', $this->lang->line('forgot_password_identity_label'), 'required');
 		}
@@ -191,13 +191,13 @@ class Auth extends MY_Controller {
 
 		if ($this->form_validation->run() == false)
 		{
-			$this->data['type'] = $this->config->item('identity');
+			$this->data['type'] = $this->config->item('identity','ion_auth');
 			// setup the input
 			$this->data['identity'] = array('name' => 'identity',
 				'id' => 'identity',
 			);
 
-			if ( $this->config->item('identity') != 'email' ){
+			if ( $this->config->item('identity', 'ion_auth') != 'email' ){
 				$this->data['identity_label'] = $this->lang->line('forgot_password_identity_label');
 			}
 			else
@@ -211,12 +211,12 @@ class Auth extends MY_Controller {
 		}
 		else
 		{
-			$identity_column = $this->config->item('identity');
+			$identity_column = $this->config->item('identity','ion_auth');
 			$identity = $this->ion_auth->where($identity_column, $this->input->post('identity'))->users()->row();
 
 			if(empty($identity)) {
 
-	            		if($this->config->item('identity') != 'email')
+	            		if($this->config->item('identity', 'ion_auth') != 'email')
 		            	{
 		            		$this->ion_auth->set_error('forgot_password_identity_not_found');
 		            	}
@@ -230,7 +230,7 @@ class Auth extends MY_Controller {
             		}
 
 			// run the forgotten password method to email an activation code to the user
-			$forgotten = $this->ion_auth->forgotten_password($identity->{$this->config->item('identity')});
+			$forgotten = $this->ion_auth->forgotten_password($identity->{$this->config->item('identity', 'ion_auth')});
 
 			if ($forgotten)
 			{
@@ -260,7 +260,7 @@ class Auth extends MY_Controller {
 		{
 			// if the code is valid then display the password reset form
 
-			$this->form_validation->set_rules('new', $this->lang->line('reset_password_validation_new_password_label'), 'required|min_length[' . $this->config->item('min_password_length') . ']|max_length[' . $this->config->item('max_password_length') . ']|matches[new_confirm]');
+			$this->form_validation->set_rules('new', $this->lang->line('reset_password_validation_new_password_label'), 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[new_confirm]');
 			$this->form_validation->set_rules('new_confirm', $this->lang->line('reset_password_validation_new_password_confirm_label'), 'required');
 
 			if ($this->form_validation->run() == false)
@@ -270,7 +270,7 @@ class Auth extends MY_Controller {
 				// set the flash data error message if there is one
 				$this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
 
-				$this->data['min_password_length'] = $this->config->item('min_password_length');
+				$this->data['min_password_length'] = $this->config->item('min_password_length', 'ion_auth');
 				$this->data['new_password'] = array(
 					'name' => 'new',
 					'id'   => 'new',
@@ -310,7 +310,7 @@ class Auth extends MY_Controller {
 				else
 				{
 					// finally change the password
-					$identity = $user->{$this->config->item('identity')};
+					$identity = $user->{$this->config->item('identity', 'ion_auth')};
 
 					$change = $this->ion_auth->reset_password($identity, $this->input->post('new'));
 
@@ -419,8 +419,8 @@ class Auth extends MY_Controller {
             redirect('auth', 'refresh');
         }
 
-        $tables = $this->config->item('tables');
-        $identity_column = $this->config->item('identity');
+        $tables = $this->config->item('tables','ion_auth');
+        $identity_column = $this->config->item('identity','ion_auth');
         $this->data['identity_column'] = $identity_column;
 
         // validate form input
@@ -437,7 +437,7 @@ class Auth extends MY_Controller {
         }
         $this->form_validation->set_rules('phone', $this->lang->line('create_user_validation_phone_label'), 'trim');
         $this->form_validation->set_rules('company', $this->lang->line('create_user_validation_company_label'), 'trim');
-        $this->form_validation->set_rules('password', $this->lang->line('create_user_validation_password_label'), 'required|min_length[' . $this->config->item('min_password_length') . ']|max_length[' . $this->config->item('max_password_length') . ']|matches[password_confirm]');
+        $this->form_validation->set_rules('password', $this->lang->line('create_user_validation_password_label'), 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password_confirm]');
         $this->form_validation->set_rules('password_confirm', $this->lang->line('create_user_validation_password_confirm_label'), 'required');
 
         if ($this->form_validation->run() == true)
@@ -550,7 +550,7 @@ class Auth extends MY_Controller {
 			// update the password if it was posted
 			if ($this->input->post('password'))
 			{
-				$this->form_validation->set_rules('password', $this->lang->line('edit_user_validation_password_label'), 'required|min_length[' . $this->config->item('min_password_length') . ']|max_length[' . $this->config->item('max_password_length') . ']|matches[password_confirm]');
+				$this->form_validation->set_rules('password', $this->lang->line('edit_user_validation_password_label'), 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password_confirm]');
 				$this->form_validation->set_rules('password_confirm', $this->lang->line('edit_user_validation_password_confirm_label'), 'required');
 			}
 
@@ -762,7 +762,7 @@ class Auth extends MY_Controller {
 		// pass the user to the view
 		$this->data['group'] = $group;
 
-		$readonly = $this->config->item('admin_group') === $group->name ? 'readonly' : '';
+		$readonly = $this->config->item('admin_group', 'ion_auth') === $group->name ? 'readonly' : '';
 
 		$this->data['group_name'] = array(
 			'name'    => 'group_name',
@@ -809,11 +809,11 @@ class Auth extends MY_Controller {
 	public function _render_page($view, $data=null, $returnhtml=false)//I think this makes more sense
 	{
 
-		$viewdata = (empty($data)) ? $this->data: $data;
+		$this->viewdata = (empty($data)) ? $this->data: $data;
 
-		$this->load->view($view, $viewdata, $returnhtml);
+		$view_html = $this->load->view($view, $this->viewdata, $returnhtml);
 
-//		if ($returnhtml) return $view_html;//This will return html on 3rd argument being true
+		if ($returnhtml) return $view_html;//This will return html on 3rd argument being true
 	}
 
 }

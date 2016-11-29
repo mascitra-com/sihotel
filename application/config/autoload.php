@@ -58,7 +58,7 @@ $autoload['packages'] = array();
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = array('session', 'parser', 'ion_auth');
+$autoload['libraries'] = array('session');
 
 /*
 | -------------------------------------------------------------------
@@ -89,7 +89,7 @@ $autoload['drivers'] = array();
 |
 |	$autoload['helper'] = array('url', 'file');
 */
-$autoload['helper'] = array('url', 'dump', 'image', 'language', 'form');
+$autoload['helper'] = array('dump', 'url');
 
 /*
 | -------------------------------------------------------------------
@@ -103,7 +103,7 @@ $autoload['helper'] = array('url', 'dump', 'image', 'language', 'form');
 | config files.  Otherwise, leave it blank.
 |
 */
-$autoload['config'] = array('ion_auth');
+$autoload['config'] = array();
 
 /*
 | -------------------------------------------------------------------

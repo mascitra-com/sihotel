@@ -1,9 +1,4 @@
 <?php
-/**
- * Rizki Herdatullah
- * Web Developer, Front-End Designer, and Project Manager
- */
-
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /*
@@ -79,9 +74,9 @@ $active_group = 'default';
 $query_builder = TRUE;
 
 $db['default'] = array(
-	'dsn'	=> ''   ,
+	'dsn'	=> '',
 	'hostname' => 'localhost',
-	'username' => 'root',
+	'username' => '',
 	'password' => '',
 	'database' => '',
 	'dbdriver' => 'mysqli',
