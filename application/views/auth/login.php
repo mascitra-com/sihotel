@@ -20,15 +20,15 @@
           <div class="form-group">
             <div class="btn-group btn-group-justified" role="group" aria-label="...">
               <div class="btn-group">
-                <button type="button" class="btn btn-primary btn-round" type="submit">Masuk</button>
+                  <button class="btn btn-primary btn-round" type="submit">Masuk</button>
               </div>
               <div class="btn-group">
-                <button type="button" class="btn btn-warning btn-round" type="button">Kembali</button>
+                  <button class="btn btn-warning btn-round" type="button">Kembali</button>
               </div>
             </div>
           </div>
         </form>
-        <a href="forgot_password">Lupa password?</a>
+          <a href="<?= site_url('auth/forgot_password') ?>">Lupa password?</a>
       </div>
       <div class="col-md-6" id="right">
         <h1>HOTELS</h1>

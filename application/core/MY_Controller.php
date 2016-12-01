@@ -15,8 +15,6 @@ class MY_Controller extends CI_Controller
 	}
 
 	/**
-	 * init()
-	 *
 	 * Berfungsi untuk mengeksekusi view
 	 */
 	protected function init()
@@ -25,24 +23,21 @@ class MY_Controller extends CI_Controller
 		$this->load->view($this->_view['template'], $this->_data);
 	}
 
-	/**
-	 * message()
-	 *
-	 * Berfungsi untuk menampilkan pesan
-	 * @ $msg = isi pesan
-	 * @ $typ = tipe pesan (default, primary, success, warning, danger)
-	 */
-	protected function message($msg="pesan", $typ="default")
+    /**
+     * Berfungsi untuk menampilkan pesan
+     *
+     * @param string $msg = isi pesan
+     * @param string $typ = tipe pesan (default, primary, success, warning, danger)
+     */
+    protected function message($msg = 'pesan', $typ = 'default')
 	{
 		$this->session->set_flashdata('message', array($msg,$typ));
 	}
 
-	/**
-	 * go()
-	 *
-	 * Berfungsi untuk melakukan redirect
-	 * @ $link = alamat tujuan
-	 */
+    /**
+     * Berfungsi untuk melakukan redirect
+     * @param $link = alamat tujuan
+     */
 	protected function go($link)
 	{
 		redirect(site_url($link));

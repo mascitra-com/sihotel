@@ -4,6 +4,7 @@
 class Bcrypt {
   private $rounds;
   private $salt_prefix;
+    private $randomState;
 
   /**
    * Bcrypt constructor.
@@ -14,7 +15,7 @@ class Bcrypt {
   public function __construct($params=array('rounds'=>7, 'salt_prefix'=>'$2y$')) {
 
     if(CRYPT_BLOWFISH != 1) {
-      throw new Exception("bcrypt not supported in this installation. See http://php.net/crypt");
+        throw new Exception('bcrypt not supported in this installation. See http://php.net/crypt');
     }
 
     $this->rounds = $params['rounds'];
@@ -31,16 +32,6 @@ class Bcrypt {
     return false;
   }
 
-  /**
-   * @param $input
-   * @param $existingHash
-   * @return bool
-     */
-  public function verify($input, $existingHash) {
-    $hash = crypt($input, $existingHash);
-    return $hash === $existingHash;
-  }
-
   private function getSalt() {
     $salt = sprintf($this->salt_prefix.'%02d$', $this->rounds);
 
@@ -50,9 +41,6 @@ class Bcrypt {
 
     return $salt;
   }
-
-  private $randomState;
-
 
   /**
    * @param $count
@@ -130,6 +118,18 @@ class Bcrypt {
 
     return $output;
   }
+
+    /**
+     * @param $input
+     * @param $existingHash
+     *
+     * @return bool
+     */
+    public function verify($input, $existingHash)
+    {
+        $hash = crypt($input, $existingHash);
+        return $hash === $existingHash;
+    }
 }
 
 
